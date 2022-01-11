@@ -1,12 +1,5 @@
 "use strict";
 
-// const responseParser = (data, statusCode) => {
-//   return {
-//     statusCode: statusCode,
-//     data: data,
-//   };
-// };
-
 const errorHandlerV3 = (api, errorHandle, message) => {
   const error = errorHandle[message];
   if (!error) {
