@@ -31,9 +31,12 @@ const getProduct = async (query) => {
 };
 
 const getOneProduct = async (id) => {
+  const { countWishlist } = strapi.services.wishlist;
   const product = await strapi.query("product").findOne({ id: id });
 
   if (!product) throw Error("PRODUCT_NOT_FOUND");
+
+  const count = await countWishlist(id);
 
   const data = {
     id: product.id,
@@ -46,6 +49,7 @@ const getOneProduct = async (id) => {
       name: product.category.name,
       description: product.category.description,
     },
+    wishlistCount: count,
   };
   return data;
 };

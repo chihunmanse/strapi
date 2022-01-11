@@ -31,4 +31,7 @@ const findOneProduct = async (ctx) => {
   }
 };
 
-module.exports = { findProduct, findOneProduct };
+module.exports = {
+  findProduct,
+  findOneProduct,
+};
