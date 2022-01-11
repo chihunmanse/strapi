@@ -1,0 +1,20 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/wishlists/:id",
+      "handler": "wishlist.createOrDeleteWishlist",
+      "config": {
+        "policies": ["member.checkToken"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/wishlists",
+      "handler": "wishlist.findWishlist",
+      "config": {
+        "policies": ["member.checkToken"]
+      }
+    }
+  ]
+}
