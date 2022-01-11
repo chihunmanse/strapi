@@ -11,8 +11,10 @@
   },
   "devDependencies": {},
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",
     "elastic-apm-node": "^3.7.0",
+    "jsonwebtoken": "^8.5.1",
     "knex": "<0.20.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",

@@ -1,10 +1,5 @@
 "use strict";
 
-/**
- * Read the documentation (https://strapi.io/documentation/v3.x/concepts/services.html#core-services)
- * to customize this service
- */
-
 const getProduct = async (query) => {
   const { category, sort, offset, limit } = query;
 

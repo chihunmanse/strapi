@@ -4,7 +4,7 @@ const errorHandle = {
   PRODUCT_NOT_FOUND: {
     id: "Product.not.found",
     statusCode: 404,
-    message: "조회한 상품이 존재하지 않습니다.",
+    message: "Product does not exist",
   },
 };
 

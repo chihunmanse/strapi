@@ -1,0 +1,20 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/users/signup",
+      "handler": "member.signUpUser",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/users/signin",
+      "handler": "member.signInUser",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}
