@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "carts",
+  "info": {
+    "name": "Cart"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "quantity": {
+      "type": "integer",
+      "default": 0
+    },
+    "member": {
+      "model": "member",
+      "via": "carts"
+    },
+    "product": {
+      "model": "product",
+      "via": "carts"
+    }
+  }
+}
