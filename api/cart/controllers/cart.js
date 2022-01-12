@@ -12,6 +12,8 @@ const addCart = async (ctx) => {
   try {
     if (!validateQuantity(quantity)) throw Error("QUANTITY_VALIDATION_ERROR");
     const product = await getOneProduct(productId);
+    if (!product) throw Error("PRODUCT_NOT_FOUND");
+
     const item = await getOneCartItem({
       userId: user.id,
       productId: product.id,
@@ -44,11 +46,40 @@ const addCart = async (ctx) => {
 // 로그인 유저 - 장바구니 조회
 const findCart = async (ctx) => {
   const { errorHandler } = require("../services/error");
-  const { getCart } = strapi.services.cart;
+  const { getCart, calculateShipping } = strapi.services.cart;
   const user = ctx.request.user;
 
   try {
-    const cart = await getCart(user.id);
+    const items = await getCart(user.id);
+
+    const cart = items.reduce(
+      (cart, item) => {
+        cart.items.push({
+          id: item.id,
+          quantity: item.quantity,
+          itemPrice: item.product.price * item.quantity,
+          product: {
+            id: item.product.id,
+            name: item.product.name,
+            price: item.product.price,
+            thumbnail_image: item.product.thumbnail_image,
+          },
+          category: {
+            id: item.product.category.id,
+            name: item.product.category.name,
+          },
+          created_at: item.created_at,
+        });
+        cart.totalPrice += item.product.price * item.quantity;
+        cart.totalQuantity += item.quantity;
+        return cart;
+      },
+      { items: [], totalPrice: 0, totalQuantity: 0 }
+    );
+
+    const shipping = calculateShipping(cart.totalPrice);
+    cart.shipping = shipping;
+    cart.orderPrice = cart.totalPrice + shipping;
 
     return ctx.send(cart, 200);
   } catch (error) {
@@ -67,13 +98,12 @@ const deleteCart = async (ctx) => {
 
   try {
     const item = await findOneCartItem(id);
-
     if (!item) throw Error("CART_NOT_FOUND");
     if (item.member.id != user.id) throw Error("INVALID_CART_ID");
 
-    const result = await deleteCartItem(id);
+    await deleteCartItem(id);
 
-    return ctx.send({ message: result }, 200);
+    return ctx.send({ message: "DELETE" }, 200);
   } catch (error) {
     console.log(error);
     const errorInfo = errorHandler(error.message);
@@ -93,7 +123,6 @@ const updateCart = async (ctx) => {
   try {
     if (!validateQuantity(quantity)) throw Error("QUANTITY_VALIDATION_ERROR");
     const item = await findOneCartItem(id);
-
     if (!item) throw Error("CART_NOT_FOUND");
     if (item.member.id != user.id) throw Error("INVALID_CART_ID");
 
