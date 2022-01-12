@@ -33,36 +33,7 @@ const getCart = async (userId) => {
     .query("cart")
     .find({ member: userId }, ["product.category"]);
 
-  const cart = items.reduce(
-    (cart, item) => {
-      cart.items.push({
-        id: item.id,
-        quantity: item.quantity,
-        itemPrice: item.product.price * item.quantity,
-        product: {
-          id: item.product.id,
-          name: item.product.name,
-          price: item.product.price,
-          thumbnail_image: item.product.thumbnail_image,
-        },
-        category: {
-          id: item.product.category.id,
-          name: item.product.category.name,
-        },
-        created_at: item.created_at,
-      });
-      cart.totalPrice += item.product.price * item.quantity;
-      cart.totalQuantity += item.quantity;
-      return cart;
-    },
-    { items: [], totalPrice: 0, totalQuantity: 0 }
-  );
-
-  const shipping = calculateShipping(cart.totalPrice);
-  cart.shipping = shipping;
-  cart.orderPrice = cart.totalPrice + shipping;
-
-  return cart;
+  return items;
 };
 
 const createCartItem = async ({ userId, productId, quantity }) => {
@@ -74,11 +45,11 @@ const createCartItem = async ({ userId, productId, quantity }) => {
 };
 
 const deleteCartItem = async (id) => {
-  await strapi.query("cart").delete({
+  const item = await strapi.query("cart").delete({
     id: id,
   });
 
-  return "delete";
+  return item;
 };
 
 const updateCartItem = async ({ id, quantity }) => {

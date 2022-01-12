@@ -1,5 +1,6 @@
 "use strict";
 
+// 회원가입
 const signUpUser = async (ctx) => {
   const { errorHandler } = require("../services/error");
   const { email, password, name } = ctx.request.body;
@@ -12,7 +13,8 @@ const signUpUser = async (ctx) => {
     if (await checkEmail(email)) throw Error("DUPLICATE_EMAIL");
 
     const hashedPassword = await hashPassword(password);
-    const user = await strapi.query("member").create({
+
+    await strapi.query("member").create({
       email: email,
       password: hashedPassword,
       name: name,
@@ -26,6 +28,7 @@ const signUpUser = async (ctx) => {
   }
 };
 
+// 로그인
 const signInUser = async (ctx) => {
   const { errorHandler } = require("../services/error");
   const { email, password } = ctx.request.body;

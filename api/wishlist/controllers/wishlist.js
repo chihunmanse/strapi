@@ -1,6 +1,6 @@
 "use strict";
 
-// 로그인 유저
+// 로그인 유저 - 상품 좋아요 & 취소
 const createOrDeleteWishlist = async (ctx) => {
   const { errorHandler } = require("../services/error");
   const { getOneProduct } = strapi.services.product;
@@ -11,21 +11,19 @@ const createOrDeleteWishlist = async (ctx) => {
 
   try {
     const product = await getOneProduct(id);
-    let wishlist = await getOneWishlist(user.id, product.id);
+    if (!product) throw Error("PRODUCT_NOT_FOUND");
+    const wishlist = await getOneWishlist(user.id, product.id);
 
     if (wishlist) {
-      const data = {
-        message: await deleteWishlist(wishlist.id),
-        count: await countWishlist(product.id),
-      };
-
-      return ctx.send(data, 200);
+      await deleteWishlist(wishlist.id);
+      const count = await countWishlist(product.id);
+      return ctx.send({ message: "DELETE", count }, 200);
     }
 
-    wishlist = await createWishlist(user.id, product.id);
+    await createWishlist(user.id, product.id);
     const count = await countWishlist(product.id);
 
-    return ctx.send({ wishlist, count }, 201);
+    return ctx.send({ message: "SUCCESS", count }, 201);
   } catch (error) {
     console.log(error);
     const errorInfo = errorHandler(error.message);
@@ -33,14 +31,32 @@ const createOrDeleteWishlist = async (ctx) => {
   }
 };
 
-// 로그인 유저
+// 로그인 유저 - 좋아요한 상품 리스트
 const findWishlist = async (ctx) => {
   const { errorHandler } = require("../services/error");
   const { getWishlist } = strapi.services.wishlist;
   const user = ctx.request.user;
   try {
     const wishlists = await getWishlist(user.id);
-    return ctx.send(wishlists);
+    const data = wishlists.reduce((list, wish) => {
+      list.push({
+        id: wish.id,
+        product: {
+          id: wish.product.id,
+          name: wish.product.name,
+          price: wish.product.price,
+          thumbnail_image: wish.product.thumbnail_image,
+        },
+        category: {
+          id: wish.product.category.id,
+          name: wish.product.category.name,
+        },
+        created_at: wish.created_at,
+      });
+      return list;
+    }, []);
+
+    return ctx.send(data);
   } catch (error) {
     console.log(error);
     const errorInfo = errorHandler(error.message);
