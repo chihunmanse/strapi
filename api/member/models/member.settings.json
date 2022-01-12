@@ -24,6 +24,10 @@
     "wishlists": {
       "via": "member",
       "collection": "wishlist"
+    },
+    "carts": {
+      "via": "member",
+      "collection": "cart"
     }
   }
 }

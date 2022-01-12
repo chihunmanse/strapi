@@ -26,6 +26,10 @@
     "wishlists": {
       "via": "product",
       "collection": "wishlist"
+    },
+    "carts": {
+      "via": "product",
+      "collection": "cart"
     }
   }
 }

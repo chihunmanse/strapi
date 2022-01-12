@@ -1,0 +1,36 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/carts",
+      "handler": "cart.addCart",
+      "config": {
+        "policies": ["member.checkToken"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/carts",
+      "handler": "cart.findCart",
+      "config": {
+        "policies": ["member.checkToken"]
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/carts/:id",
+      "handler": "cart.deleteCart",
+      "config": {
+        "policies": ["member.checkToken"]
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/carts/:id",
+      "handler": "cart.updateCart",
+      "config": {
+        "policies": ["member.checkToken"]
+      }
+    }
+  ]
+}
