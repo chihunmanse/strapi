@@ -1,22 +1,20 @@
 "use strict";
 
-const validateQuantity = (quantity) => {
-  const result = Number.isInteger(quantity) && quantity >= 0 ? true : false;
+const validateQuantity = (quantity) =>
+  Number.isInteger(quantity) && quantity >= 0 ? true : false;
+
+const getCartItem = async ({ userId, productId }) =>
+  await strapi.query("cart").findOne({ member: userId, product: productId });
+
+const isCartItem = async (id) => {
+  const item = await strapi.query("cart").findOne({ id });
+  const result = item ? true : false;
   return result;
 };
 
-const getOneCartItem = async ({ userId, productId }) => {
-  const item = await strapi
-    .query("cart")
-    .findOne({ member: userId, product: productId });
-
-  return item;
-};
-
-const findOneCartItem = async (id) => {
+const getCartOwnerId = async (id) => {
   const item = await strapi.query("cart").findOne({ id });
-
-  return item;
+  return item.member.id;
 };
 
 const calculateShipping = (totalPrice) => {
@@ -28,40 +26,25 @@ const calculateShipping = (totalPrice) => {
   return shippingPrice;
 };
 
-const getCart = async (userId) => {
-  const items = await strapi
-    .query("cart")
-    .find({ member: userId }, ["product.category"]);
+const getCart = async (userId) =>
+  await strapi.query("cart").find({ member: userId }, ["product.category"]);
 
-  return items;
-};
-
-const createCartItem = async ({ userId, productId, quantity }) => {
-  const item = await strapi
+const createCartItem = async ({ userId, productId, quantity }) =>
+  await strapi
     .query("cart")
     .create({ member: userId, product: productId, quantity: quantity });
 
-  return item;
-};
+const deleteCartItem = async (id) =>
+  await strapi.query("cart").delete({ id: id });
 
-const deleteCartItem = async (id) => {
-  const item = await strapi.query("cart").delete({
-    id: id,
-  });
-
-  return item;
-};
-
-const updateCartItem = async ({ id, quantity }) => {
-  const item = await strapi.query("cart").update({ id }, { quantity });
-
-  return item;
-};
+const updateCartItem = async ({ id, quantity }) =>
+  await strapi.query("cart").update({ id }, { quantity });
 
 module.exports = {
   validateQuantity,
-  getOneCartItem,
-  findOneCartItem,
+  getCartItem,
+  isCartItem,
+  getCartOwnerId,
   getCart,
   calculateShipping,
   createCartItem,

@@ -1,46 +1,25 @@
 "use strict";
 
-const getOneWishlist = async (userId, productId) => {
-  const wishlist = await strapi
+const getWishlists = async (userId) =>
+  await strapi.query("wishlist").find({ member: userId }, ["product.category"]);
+
+const getOneWishlist = async (userId, productId) =>
+  await strapi
     .query("wishlist")
     .findOne({ member: userId, product: productId });
 
-  return wishlist;
-};
+const createWishlist = async (userId, productId) =>
+  await strapi.query("wishlist").create({ member: userId, product: productId });
 
-const getWishlist = async (userId) => {
-  const wishlists = await strapi
-    .query("wishlist")
-    .find({ member: userId }, ["product.category"]);
+const deleteWishlist = async (id) =>
+  await strapi.query("wishlist").delete({ id: id });
 
-  return wishlists;
-};
-
-const createWishlist = async (userId, productId) => {
-  const wishlist = await strapi
-    .query("wishlist")
-    .create({ member: userId, product: productId });
-
-  return wishlist;
-};
-
-const deleteWishlist = async (id) => {
-  const wishlist = await strapi.query("wishlist").delete({
-    id: id,
-  });
-
-  return wishlist;
-};
-
-const countWishlist = async (productId) => {
-  const count = await strapi.query("wishlist").count({ product: productId });
-
-  return count;
-};
+const countWishlist = async (productId) =>
+  await strapi.query("wishlist").count({ product: productId });
 
 module.exports = {
   getOneWishlist,
-  getWishlist,
+  getWishlists,
   createWishlist,
   deleteWishlist,
   countWishlist,

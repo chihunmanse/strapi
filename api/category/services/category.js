@@ -1,13 +1,14 @@
 "use strict";
 
-const getCategory = async () => {
-  const categories = await strapi.query("category").find();
-  return categories;
-};
+const getCategories = async () => await strapi.query("category").find();
 
-const getOneCategory = async (id) => {
+const getOneCategory = async (id) =>
+  await strapi.query("category").findOne({ id });
+
+const isCategoryId = async (id) => {
   const category = await strapi.query("category").findOne({ id });
-  return category;
+  const result = category ? true : false;
+  return result;
 };
 
-module.exports = { getCategory, getOneCategory };
+module.exports = { getCategories, getOneCategory, isCategoryId };

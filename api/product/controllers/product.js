@@ -1,13 +1,18 @@
 "use strict";
+const { errorHandler } = require("../services/error");
+const {
+  getProducts,
+  isProductId,
+  getOneProduct,
+} = require("../services/product");
+const { countWishlist } = require("../../wishlist/services/wishlist");
 
 // 상품 목록
 const findProduct = async (ctx) => {
-  const { errorHandler } = require("../services/error");
   const query = ctx.request.query;
-  const { getProduct } = strapi.services.product;
 
   try {
-    const products = await getProduct(query);
+    const products = await getProducts(query);
     const data = products.map((product) => {
       return {
         id: product.id,
@@ -27,14 +32,11 @@ const findProduct = async (ctx) => {
 
 // 상품 조회
 const findOneProduct = async (ctx) => {
-  const { errorHandler } = require("../services/error");
   const id = ctx.params.id;
-  const { getOneProduct } = strapi.services.product;
-  const { countWishlist } = strapi.services.wishlist;
 
   try {
+    if (!(await isProductId(id))) throw Error("PRODUCT_NOT_FOUND");
     const product = await getOneProduct(id);
-    if (!product) throw Error("PRODUCT_NOT_FOUND");
     const likeCount = await countWishlist(id);
 
     const data = {
