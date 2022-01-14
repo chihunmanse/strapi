@@ -1,14 +1,14 @@
 module.exports = async (ctx, next) => {
   const { errorHandler } = require("../../services/error");
-  const { checkUserId } = strapi.services.member;
+  const { isUserId, getUserById } = strapi.services.member;
   const jwt = require("jsonwebtoken");
   const jwtSecret = process.env.JWT_SECRET;
   const { token } = ctx.request.headers;
 
   try {
     const { userId } = await jwt.verify(token, jwtSecret);
-    const user = await checkUserId(userId);
-    if (!user) throw Error;
+    if (!(await isUserId(userId))) throw Error;
+    const user = await getUserById(userId);
     ctx.request.user = user;
     return next();
   } catch (error) {

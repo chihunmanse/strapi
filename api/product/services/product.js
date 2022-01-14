@@ -1,6 +1,6 @@
 "use strict";
 
-const getProduct = async (query) => {
+const getProducts = async (query) => {
   const { category, sort, offset, limit } = query;
 
   const sortBy = {
@@ -20,9 +20,13 @@ const getProduct = async (query) => {
   return products;
 };
 
-const getOneProduct = async (id) => {
+const isProductId = async (id) => {
   const product = await strapi.query("product").findOne({ id: id });
-  return product;
+  const result = product ? true : false;
+  return result;
 };
 
-module.exports = { getProduct, getOneProduct };
+const getOneProduct = async (id) =>
+  await strapi.query("product").findOne({ id: id });
+
+module.exports = { getProducts, isProductId, getOneProduct };

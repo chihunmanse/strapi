@@ -9,22 +9,32 @@ const hashPassword = async (password) => {
   return hashedPassword;
 };
 
-// 이메일 유저 확인
-const checkEmail = async (email) => {
+// 이메일 확인
+const isEmail = async (email) => {
   const user = await strapi.query("member").findOne({ email: email });
-  return user;
+  const result = user ? true : false;
+  return result;
 };
 
-// id 유저 확인
-const checkUserId = async (id) => {
+// 이메일로 유저 구하기
+const getUserByEmail = async (email) =>
+  await strapi.query("member").findOne({ email: email });
+
+// 유저 확인
+const isUserId = async (id) => {
   const user = await strapi.query("member").findOne({ id: id });
-  return user;
+  const result = user ? true : false;
+  return result;
 };
+
+// id로 유저 구하기
+const getUserById = async (id) =>
+  await strapi.query("member").findOne({ id: id });
 
 // 비밀번호 확인
-const checkPassword = async (user, password) => {
+const checkPassword = async (inputPassword, userPassword) => {
   const bcrypt = require("bcrypt");
-  const checked = await bcrypt.compare(password, user.password);
+  const checked = await bcrypt.compare(inputPassword, userPassword);
   return checked;
 };
 
@@ -47,23 +57,23 @@ const validatePassword = (password) => {
 // 토큰 생성
 const createToken = (id) => {
   const jwt = require("jsonwebtoken");
-  const jwtSecret = process.env.JWT_SECRET;
-  const algorithm = process.env.ALGORITHM;
-  const expiresIn = process.env.EXPIRES_IN;
+  const { JWT_SECRET, ALGORITHM, EXPIRES_IN } = process.env;
 
-  const accessToken = jwt.sign({ userId: id }, jwtSecret, {
-    algorithm,
-    expiresIn,
+  const accessToken = jwt.sign({ userId: id }, JWT_SECRET, {
+    algorithm: ALGORITHM,
+    expiresIn: EXPIRES_IN,
   });
   return accessToken;
 };
 
 module.exports = {
   hashPassword,
-  checkEmail,
+  isEmail,
+  getUserByEmail,
+  isUserId,
+  getUserById,
   checkPassword,
   validateEmail,
   validatePassword,
   createToken,
-  checkUserId,
 };

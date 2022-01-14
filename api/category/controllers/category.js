@@ -1,12 +1,15 @@
 "use strict";
+const { errorHandler } = require("../services/error");
+const {
+  getCategories,
+  getOneCategory,
+  isCategoryId,
+} = require("../services/category");
 
 // 카테고리 목록
 const findCategory = async (ctx) => {
-  const { errorHandler } = require("../services/error");
-  const { getCategory } = strapi.services.category;
-
   try {
-    const categories = await getCategory();
+    const categories = await getCategories();
 
     const data = categories.map((category) => {
       return {
@@ -25,13 +28,11 @@ const findCategory = async (ctx) => {
 
 // 카테고리 조회
 const findOneCategory = async (ctx) => {
-  const { errorHandler } = require("../services/error");
-  const { getOneCategory } = strapi.services.category;
   const id = ctx.params.id;
 
   try {
+    if (!(await isCategoryId(id))) throw Error("CATEGORY_NOT_FOUND");
     const category = await getOneCategory(id);
-    if (!category) throw Error("CATEGORY_NOT_FOUND");
 
     const data = {
       id: category.id,

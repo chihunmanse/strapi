@@ -1,17 +1,25 @@
 "use strict";
+const { errorHandler } = require("../services/error");
+const {
+  getOneWishlist,
+  createWishlist,
+  deleteWishlist,
+  countWishlist,
+  getWishlists,
+} = require("../services/wishlist");
+const {
+  isProductId,
+  getOneProduct,
+} = require("../../product/services/product");
 
 // 로그인 유저 - 상품 좋아요 & 취소
 const createOrDeleteWishlist = async (ctx) => {
-  const { errorHandler } = require("../services/error");
-  const { getOneProduct } = strapi.services.product;
-  const { getOneWishlist, createWishlist, deleteWishlist, countWishlist } =
-    strapi.services.wishlist;
   const id = ctx.params.id;
   const user = ctx.request.user;
 
   try {
+    if (!(await isProductId(id))) throw Error("PRODUCT_NOT_FOUND");
     const product = await getOneProduct(id);
-    if (!product) throw Error("PRODUCT_NOT_FOUND");
     const wishlist = await getOneWishlist(user.id, product.id);
 
     if (wishlist) {
@@ -33,11 +41,9 @@ const createOrDeleteWishlist = async (ctx) => {
 
 // 로그인 유저 - 좋아요한 상품 리스트
 const findWishlist = async (ctx) => {
-  const { errorHandler } = require("../services/error");
-  const { getWishlist } = strapi.services.wishlist;
   const user = ctx.request.user;
   try {
-    const wishlists = await getWishlist(user.id);
+    const wishlists = await getWishlists(user.id);
     const data = wishlists.reduce((list, wish) => {
       list.push({
         id: wish.id,
