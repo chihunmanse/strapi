@@ -4,6 +4,8 @@ const {
   getCategories,
   getOneCategory,
   isCategoryId,
+  generateCategoriesData,
+  generateCategoryData,
 } = require("../services/category");
 
 // 카테고리 목록
@@ -11,13 +13,7 @@ const findCategory = async (ctx) => {
   try {
     const categories = await getCategories();
 
-    const data = categories.map((category) => {
-      return {
-        id: category.id,
-        name: category.name,
-        description: category.description,
-      };
-    });
+    const data = generateCategoriesData(categories);
 
     return ctx.send(data, 200);
   } catch (error) {
@@ -34,12 +30,7 @@ const findOneCategory = async (ctx) => {
     if (!(await isCategoryId(id))) throw Error("CATEGORY_NOT_FOUND");
     const category = await getOneCategory(id);
 
-    const data = {
-      id: category.id,
-      name: category.name,
-      description: category.description,
-      created_at: category.created_at,
-    };
+    const data = generateCategoryData(category);
 
     return ctx.send(data, 200);
   } catch (error) {
