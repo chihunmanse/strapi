@@ -6,6 +6,7 @@ const {
   deleteWishlist,
   countWishlist,
   getWishlists,
+  generateWishlistData,
 } = require("../services/wishlist");
 const {
   isProductId,
@@ -44,23 +45,7 @@ const findWishlist = async (ctx) => {
   const user = ctx.request.user;
   try {
     const wishlists = await getWishlists(user.id);
-    const data = wishlists.reduce((list, wish) => {
-      list.push({
-        id: wish.id,
-        product: {
-          id: wish.product.id,
-          name: wish.product.name,
-          price: wish.product.price,
-          thumbnail_image: wish.product.thumbnail_image,
-        },
-        category: {
-          id: wish.product.category.id,
-          name: wish.product.category.name,
-        },
-        created_at: wish.created_at,
-      });
-      return list;
-    }, []);
+    const data = generateWishlistData(wishlists);
 
     return ctx.send(data);
   } catch (error) {

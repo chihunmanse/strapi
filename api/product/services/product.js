@@ -1,4 +1,5 @@
 "use strict";
+const { countWishlist } = require("../../wishlist/services/wishlist");
 
 const getProducts = async (query) => {
   const { category, sort, offset, limit } = query;
@@ -29,4 +30,43 @@ const isProductId = async (id) => {
 const getOneProduct = async (id) =>
   await strapi.query("product").findOne({ id: id });
 
-module.exports = { getProducts, isProductId, getOneProduct };
+const generateProductsData = (products) => {
+  const data = products.map((product) => {
+    return {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      thumbnail_image: product.thumbnail_image,
+      created_at: product.created_at,
+    };
+  });
+
+  return data;
+};
+
+const generateProductData = async (product) => {
+  const likeCount = await countWishlist(product.id);
+  const data = {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    thumbnail_image: product.thumbnail_image,
+    created_at: product.created_at,
+    category: {
+      id: product.category.id,
+      name: product.category.name,
+      description: product.category.description,
+    },
+    wishlistCount: likeCount,
+  };
+
+  return data;
+};
+
+module.exports = {
+  getProducts,
+  isProductId,
+  getOneProduct,
+  generateProductsData,
+  generateProductData,
+};

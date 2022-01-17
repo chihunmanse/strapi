@@ -4,8 +4,9 @@ const {
   getProducts,
   isProductId,
   getOneProduct,
+  generateProductsData,
+  generateProductData,
 } = require("../services/product");
-const { countWishlist } = require("../../wishlist/services/wishlist");
 
 // 상품 목록
 const findProduct = async (ctx) => {
@@ -13,15 +14,7 @@ const findProduct = async (ctx) => {
 
   try {
     const products = await getProducts(query);
-    const data = products.map((product) => {
-      return {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        thumbnail_image: product.thumbnail_image,
-        created_at: product.created_at,
-      };
-    });
+    const data = generateProductsData(products);
 
     return ctx.send(data, 200);
   } catch (error) {
@@ -37,21 +30,7 @@ const findOneProduct = async (ctx) => {
   try {
     if (!(await isProductId(id))) throw Error("PRODUCT_NOT_FOUND");
     const product = await getOneProduct(id);
-    const likeCount = await countWishlist(id);
-
-    const data = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      thumbnail_image: product.thumbnail_image,
-      created_at: product.created_at,
-      category: {
-        id: product.category.id,
-        name: product.category.name,
-        description: product.category.description,
-      },
-      wishlistCount: likeCount,
-    };
+    const data = await generateProductData(product);
 
     return ctx.send(data, 200);
   } catch (error) {
